@@ -469,7 +469,7 @@ testListLazy = do
   assert $ Just 1 == toUnfoldable (iterate (_ + 1) 1)
 
   log "toUnfoldable should work ok on infinite NEL"
-  assert $ Just 1 == NEL.toUnfoldable (nel $ 1 :| iterate (_ + 1) 2) -- Bit odd that `iterate` doesn't produce a NEL as is, but I suppose the whole thing's an afterthought
+  assert $ Just 1 == NEL.toUnfoldable (NEL.iterate (_ + 1) 1)
 
 step :: Int -> Maybe (Tuple Int Int)
 step 6 = Nothing
