@@ -112,11 +112,8 @@ lift :: forall a b. (L.List a -> b) -> NonEmptyList a -> b
 lift f (NonEmptyList (x :| xs)) = f (x : xs)
 
 toUnfoldable :: forall f. Unfoldable1 f => NonEmptyList ~> f
-toUnfoldable  =
+toUnfoldable =
   unfoldr1 (\rec -> Tuple rec.head $ L.uncons rec.tail) <<< uncons 
-
-
-  -- unfoldr (\xs -> (\rec -> Tuple rec.head rec.tail) <$> L.uncons xs) <<< toList
 
 fromFoldable :: forall f a. Foldable f => f a -> Maybe (NonEmptyList a)
 fromFoldable = fromList <<< L.fromFoldable
