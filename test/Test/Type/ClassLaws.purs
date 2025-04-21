@@ -16,6 +16,7 @@ import Effect.Console as Console
 import Test.Assert as Assert
 
 import Data.List (List)
+import Data.Newtype (class Newtype, modify)
 
 -- Small-but-not-too-small type to make it easier to hard-code random inputs
 -- to make up for no QuickCheck dependency
@@ -55,6 +56,14 @@ type LawTestChoice = List
 -- that like the transformers probably depend on anyways
 newtype LawTestM f a = LawTestM (FromArray f -> LawTestChoice a)
 
+derive instance Newtype (LawTestM f a) _
+
+instance Functor (LawTest f) where
+  map = modify $ map <<< map
+
+-- instance Apply (LawTest f) where
+
+
 type Assertion = Maybe String
 
 assert :: forall m s. Applicative m => Show s => s -> Boolean -> m (Maybe String)
@@ -62,7 +71,9 @@ assert info testResult
   | not testResult = pure $ Just $ "Assertion failed on " <> show info
   | otherwise = pure Nothing
 
-runAssertion :: 
+runAssertion :: Assertion -> Effect Unit
+runAssertion (Just msg) = Assert.assert' msg false
+runAssertion Nothing = pure unit
 
 data Law f = Law String (LawTestM f Assertion)
 
@@ -71,7 +82,7 @@ runLaw (Law lawDescription (LawTestM reader)) fromArray = do
   Console.log lawDescription
   traverse_ (traverse_ runAssertion) $ reader fromArray
 
-make :: forall f a. Array a -> SingleLawTestM f (f a)
+make :: forall f a. Array a -> LawTestM f (f a)
 make = LawTestM <<< pure <<< (#)
 
 testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
