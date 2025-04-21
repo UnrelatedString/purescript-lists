@@ -11,8 +11,10 @@ import Prelude
 
 import Data.Maybe (Maybe)
 import Effect (Effect)
-import Effect.Console (log)
-import Test.Assert (assert)
+import Effect.Console as Console
+import Test.Assert as Assert
+
+import Data.List (List)
 
 -- Small-but-not-too-small type to make it easier to hard-code random inputs
 -- to make up for no QuickCheck dependency
@@ -37,39 +39,57 @@ exhaustive _ _ _ _ _ _ _ _ _ x Gui = x
 instance Show HeavenlyStem where
   show = exhaustive "甲" "乙" "丙" "丁" "戊" "己" "庚" "辛" "壬" "癸"
 
-type Constructor f = forall a. Array a -> Maybe (f a)
+type FromArray f = forall a. Array a -> Maybe (f a)
+
+type LawTest f = String -> FromArray f -> Effect Unit
+
+-- ...feels a little iffy to trustingly use the List monad in code that's supposed to test if
+-- the List monad is law-abiding but. the problem I found is in Applicative so good enough !!
+type LawTestChoice = List
+
+-- ... and I feel like reinventing the free monad and/or readert is overkill for this
+-- but ahahahahaha whatever idk uhhhhh
+-- (why am I doing this to myself why now is this like specifically to distract me from English)
+newtype LawTestM f a = LawTestM (FromArray f -> LawTestM' f a)
+
+instance Functor (LawTestM f) where
+  map = map <<< map
+
+instance Apply (LawTestM f) where 
+
+testLaws :: forall f. String -> LawTestM f Unit -> LawTest f
 
 functorLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Functor f =>
-  Constructor f -> Effect Unit
-functorLaws c = do
+  LawTest f
+functorLaws = testLaws "Functor" do
   pure unit
 
 applyLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Apply f =>
-  Constructor f -> Effect Unit
-applyLaws c = do
+  LawTest f
+applyLaws = testLaws "Apply" do
   pure unit
 
 applicativeLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Applicative f =>
-  Constructor f -> Effect Unit
-applicativeLaws c = do
+  LawTest f
+applicativeLaws = testLaws "Applicative" do
   pure unit
 
 bindLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Bind f =>
-  Constructor f -> Effect Unit
-bindLaws c = do
+  LawTest f
+bindLaws = testLaws "Bind" do
   pure unit
 
 monadLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Monad f =>
-  Constructor f -> Effect Unit
-monadLaws c = do
+  LawTest f
+monadLaws = testLaws "Monad" do
   pure unit
