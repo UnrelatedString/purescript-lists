@@ -9,7 +9,8 @@ module Test.Type.ClassLaws
 
 import Prelude
 
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe(..))
+import Data.Traversable (class Traversable, traverse_)
 import Effect (Effect)
 import Effect.Console as Console
 import Test.Assert as Assert
@@ -48,53 +49,72 @@ type LawTest f = String -> FromArray f -> Effect Unit
 type LawTestChoice = List
 
 -- WE LOVE OVERENGINEERING not like this wouldn't be trivial to write with monad transformers
+-- and Free and all that jazz
 -- but introducing new Bower dependencies for testing seems like a radically bad idea
 -- especially for as basic a package as lists
-newtype LawTestM f a = LawTestM (FromArray f -> Effect a)
+-- that like the transformers probably depend on anyways
+newtype LawTestM f a = LawTestM (FromArray f -> LawTestChoice a)
 
+type Assertion = Maybe String
 
+assert :: forall m s. Applicative m => Show s => s -> Boolean -> m (Maybe String)
+assert info testResult
+  | not testResult = pure $ Just $ "Assertion failed on " <> show info
+  | otherwise = pure Nothing
+
+runAssertion :: 
+
+data Law f = Law String (LawTestM f Assertion)
+
+runLaw :: forall f a. Law f -> FromArray f -> Effect Unit
+runLaw (Law lawDescription (LawTestM reader)) fromArray = do
+  Console.log lawDescription
+  traverse_ (traverse_ runAssertion) $ reader fromArray
 
 make :: forall f a. Array a -> SingleLawTestM f (f a)
 make = LawTestM <<< pure <<< (#)
 
-testLaws :: forall f. String -> LawTestM f Unit -> LawTest f
+testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
 testLaws className lawTests typeName fromArray = do
   Console.log $ typeName <> " should satisfy " <> className <> " laws:"
-  
-
-law :: forall f. String -> SingleLawTestM f Unit -> LawTest f Unit
+  Console.grouped $ traverse_ (runLaw fromArray) lawTests
 
 functorLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Functor f =>
   LawTest f
-functorLaws = testLaws "Functor" do
-  pure unit
+functorLaws = testLaws "Functor"
+  [
+  ]
 
 applyLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Apply f =>
   LawTest f
-applyLaws = testLaws "Apply" do
-  pure unit
+applyLaws = testLaws "Apply"
+  [
+  ]
 
 applicativeLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Applicative f =>
   LawTest f
-applicativeLaws = testLaws "Applicative" do
-  pure unit
+applicativeLaws = testLaws "Applicative"
+  [
+  ]
 
 bindLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Bind f =>
   LawTest f
-bindLaws = testLaws "Bind" do
-  pure unit
+bindLaws = testLaws "Bind"
+  [
+  ]
 
 monadLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Monad f =>
   LawTest f
-monadLaws = testLaws "Monad" do
-  pure unit
+monadLaws = testLaws "Monad"
+  [
+  ]
