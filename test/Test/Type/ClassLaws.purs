@@ -1,5 +1,6 @@
 module Test.Type.ClassLaws
-  ( functorLaws
+  ( HeavenlyStem
+  , functorLaws
   , applyLaws
   , applicativeLaws
   , bindLaws
@@ -8,6 +9,7 @@ module Test.Type.ClassLaws
 
 import Prelude
 
+import Data.Maybe (Maybe)
 import Effect (Effect)
 import Effect.Console (log)
 import Test.Assert (assert)
@@ -33,7 +35,7 @@ exhaustive _ _ _ _ _ _ _ _ x _ Ren = x
 exhaustive _ _ _ _ _ _ _ _ _ x Gui = x
 
 instance Show HeavenlyStem where
-  show = exhaustive '甲' '乙' '丙' '丁' '戊' '己' '庚' '辛' '壬' '癸'
+  show = exhaustive "甲" "乙" "丙" "丁" "戊" "己" "庚" "辛" "壬" "癸"
 
 type Constructor f = Array HeavenlyStem -> Maybe (f HeavenlyStem)
 
@@ -41,34 +43,34 @@ functorLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Functor f =>
   Constructor f -> Effect Unit
-functorLaws = do
+functorLaws c = do
   pure unit
 
 applyLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Apply f =>
   Constructor f -> Effect Unit
-applyLaws = do
-  functorLaws
+applyLaws c = do
+  functorLaws c
 
 applicativeLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Applicative f =>
   Constructor f -> Effect Unit
-applicativeLaws = do
-  applyLaws
+applicativeLaws c = do
+  applyLaws c
 
 bindLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Bind f =>
   Constructor f -> Effect Unit
-bindLaws = do
+bindLaws c = do
   pure unit
 
 monadLaws :: forall f.
   Eq (f HeavenlyStem) =>
   Monad f =>
   Constructor f -> Effect Unit
-functorLaws = do
-  applicativeLaws
-  bindLaws
+monadLaws c = do
+  applicativeLaws c
+  bindLaws c
