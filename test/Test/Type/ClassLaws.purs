@@ -50,14 +50,19 @@ type LawTestChoice = List
 -- WE LOVE OVERENGINEERING not like this wouldn't be trivial to write with monad transformers
 -- but introducing new Bower dependencies for testing seems like a radically bad idea
 -- especially for as basic a package as lists
-newtype LawTestM f a = LawTestM (FromArray f -> LawTestM' f a)
+newtype LawTestM f a = LawTestM (FromArray f -> Effect a)
 
-data LawTestM' f a = 
 
-make :: forall f a. Array a -> LawTestM f (f a)
+
+make :: forall f a. Array a -> SingleLawTestM f (f a)
 make = LawTestM <<< pure <<< (#)
 
 testLaws :: forall f. String -> LawTestM f Unit -> LawTest f
+testLaws className lawTests typeName fromArray = do
+  Console.log $ typeName <> " should satisfy " <> className <> " laws:"
+  
+
+law :: forall f. String -> SingleLawTestM f Unit -> LawTest f Unit
 
 functorLaws :: forall f.
   Eq (f HeavenlyStem) =>
