@@ -47,15 +47,12 @@ type LawTest f = String -> FromArray f -> Effect Unit
 -- the List monad is law-abiding but. the problem I found is in Applicative so good enough !!
 type LawTestChoice = List
 
--- ... and I feel like reinventing the free monad and/or readert is overkill for this
+-- ... and I feel like reinventing scuffed readert is overkill for this
 -- but ahahahahaha whatever idk uhhhhh
 -- (why am I doing this to myself why now is this like specifically to distract me from English)
-newtype LawTestM f a = LawTestM (FromArray f -> LawTestM' f a)
+newtype LawTestM f a = LawTestM (FromArray f -> )
 
-instance Functor (LawTestM f) where
-  map = map <<< map
-
-instance Apply (LawTestM f) where 
+make :: forall f a. Array a -> LawTestM f (f a)
 
 testLaws :: forall f. String -> LawTestM f Unit -> LawTest f
 
