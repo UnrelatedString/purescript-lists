@@ -16,7 +16,6 @@ import Effect.Console as Console
 import Test.Assert as Assert
 
 import Data.List (List)
-import Data.Newtype (class Newtype, modify)
 
 -- Small-but-not-too-small type to make it easier to hard-code random inputs
 -- to make up for no QuickCheck dependency
@@ -56,13 +55,14 @@ type LawTestChoice = List
 -- that like the transformers probably depend on anyways
 newtype LawTestM f a = LawTestM (FromArray f -> LawTestChoice a)
 
-derive instance Newtype (LawTestM f a) _
+instance Functor (LawTestM f) where
+  map f (LawTestM g) = LawTestM $ map $ map f g
 
-instance Functor (LawTest f) where
-  map = modify $ map <<< map
+instance Apply (LawTestM f) where
+  apply (LawTestM f) (LawTestM g) = LawTestM \toArray -> f toArray <*> g toArray
 
--- instance Apply (LawTest f) where
-
+instance Applicative (LawTestM f) where
+  pure = LawTestM <<< pure <<< pure
 
 type Assertion = Maybe String
 
