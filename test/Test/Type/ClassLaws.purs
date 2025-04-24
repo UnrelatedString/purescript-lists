@@ -1,7 +1,5 @@
 module Test.Type.ClassLaws
-  ( HeavenlyStem(..)
-  , LawTestChoice
-  , exhaustive
+  ( LawTestChoice
   , functorLaws
   , applyLaws
   , applicativeLaws
@@ -12,7 +10,7 @@ module Test.Type.ClassLaws
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.Traversable (class Traversable, traverse_, traverse)
+import Data.Traversable (class Traversable, traverse_)
 import Data.Unfoldable (fromMaybe)
 import Effect (Effect)
 import Effect.Console as Console
@@ -20,28 +18,7 @@ import Test.Assert as Assert
 
 import Data.List (List)
 
--- Small-but-not-too-small type to make it easier to hard-code random inputs
--- to make up for no QuickCheck dependency
-
-data HeavenlyStem = Jia | Yi | Bing | Ding | Wu | Ji | Geng | Xin | Ren | Gui
-
-derive instance Eq HeavenlyStem
-derive instance Ord HeavenlyStem
-
-exhaustive :: forall a. a -> a -> a -> a -> a -> a -> a -> a -> a -> a -> HeavenlyStem -> a
-exhaustive x _ _ _ _ _ _ _ _ _ Jia = x
-exhaustive _ x _ _ _ _ _ _ _ _ Yi = x
-exhaustive _ _ x _ _ _ _ _ _ _ Bing = x
-exhaustive _ _ _ x _ _ _ _ _ _ Ding = x
-exhaustive _ _ _ _ x _ _ _ _ _ Wu = x
-exhaustive _ _ _ _ _ x _ _ _ _ Ji = x
-exhaustive _ _ _ _ _ _ x _ _ _ Geng = x
-exhaustive _ _ _ _ _ _ _ x _ _ Xin = x
-exhaustive _ _ _ _ _ _ _ _ x _ Ren = x
-exhaustive _ _ _ _ _ _ _ _ _ x Gui = x
-
-instance Show HeavenlyStem where
-  show = exhaustive "甲" "乙" "丙" "丁" "戊" "己" "庚" "辛" "壬" "癸"
+import Test.Type.ClassLaws.TestData (HeavenlyStem, arrays, functions1, functions2)
 
 type FromArray f = forall a. Array a -> Maybe (f a)
 
@@ -89,15 +66,23 @@ runAssertion :: Assertion -> Effect Unit
 runAssertion (Just msg) = Assert.assert' msg false
 runAssertion Nothing = pure unit
 
+
+
 data Law f = Law String (LawTestM f Assertion)
 
-runLaw :: forall f a. Law f -> FromArray f -> Effect Unit
+runLaw :: forall f. Law f -> FromArray f -> Effect Unit
 runLaw (Law lawDescription (LawTestM reader)) fromArray = do
   Console.log lawDescription
   traverse_ runAssertion $ reader fromArray
 
 make :: forall f a. Array a -> LawTestM f (f a)
 make a = LawTestM \fromArray -> fromMaybe (fromArray a)
+
+choose :: forall f a. LawTestChoice a -> LawTestM f a
+choose = LawTestM <<< const
+
+fA :: forall f. LawTestM f (f HeavenlyStem)
+fA = choose arrays >>= make
 
 testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
 testLaws className lawTests typeName fromArray = do
@@ -112,7 +97,7 @@ functorLaws :: forall f.
   LawTest f
 functorLaws = testLaws "Functor"
   [ Law "Identity: map identity = identity" do
-      x <- make [Yi, Yi]
+      x <- fA
       assert x $ map identity x == x
   , Law "Composition: map (f <<< g) = map f <<< map g" do
       assert unit true

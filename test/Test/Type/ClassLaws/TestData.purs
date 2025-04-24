@@ -2,12 +2,37 @@ module Test.Type.ClassLaws.TestData
   ( arrays
   , functions1
   , functions2
+  , HeavenlyStem
   ) where
 
 import Prelude
 
 import Data.List ((:), List(Nil))
-import Test.Type.ClassLaws (HeavenlyStem(..), LawTestChoice, exhaustive)
+
+type LawTestChoice = List
+
+-- Small-but-not-too-small type to make it easier to hard-code random inputs
+-- to make up for no QuickCheck dependency
+
+data HeavenlyStem = Jia | Yi | Bing | Ding | Wu | Ji | Geng | Xin | Ren | Gui
+
+derive instance Eq HeavenlyStem
+derive instance Ord HeavenlyStem
+
+exhaustive :: forall a. a -> a -> a -> a -> a -> a -> a -> a -> a -> a -> HeavenlyStem -> a
+exhaustive x _ _ _ _ _ _ _ _ _ Jia = x
+exhaustive _ x _ _ _ _ _ _ _ _ Yi = x
+exhaustive _ _ x _ _ _ _ _ _ _ Bing = x
+exhaustive _ _ _ x _ _ _ _ _ _ Ding = x
+exhaustive _ _ _ _ x _ _ _ _ _ Wu = x
+exhaustive _ _ _ _ _ x _ _ _ _ Ji = x
+exhaustive _ _ _ _ _ _ x _ _ _ Geng = x
+exhaustive _ _ _ _ _ _ _ x _ _ Xin = x
+exhaustive _ _ _ _ _ _ _ _ x _ Ren = x
+exhaustive _ _ _ _ _ _ _ _ _ x Gui = x
+
+instance Show HeavenlyStem where
+  show = exhaustive "甲" "乙" "丙" "丁" "戊" "己" "庚" "辛" "壬" "癸"
 
 -- Psseudorandomly generated then hardcoded because the alternative is reimplementing an LCG
 
