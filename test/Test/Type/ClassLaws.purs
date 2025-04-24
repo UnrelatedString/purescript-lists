@@ -1,5 +1,7 @@
 module Test.Type.ClassLaws
   ( HeavenlyStem
+  , LawTestChoice
+  , exhaustive
   , functorLaws
   , applyLaws
   , applicativeLaws
@@ -112,6 +114,8 @@ functorLaws = testLaws "Functor"
   [ Law "Identity: map identity = identity" do
       x <- make [Yi, Yi]
       assert x $ map identity x == x
+  , Law "Composition: map (f <<< g) = map f <<< map g" do
+
   ]
 
 applyLaws :: forall f.
