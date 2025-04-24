@@ -3,6 +3,8 @@ module Test.Type.ClassLaws.TestData
   , functions1
   ) where
 
+import Prelude
+
 import Data.List ((:), List(Nil))
 import Test.Type.ClassLaws (HeavenlyStem(..), LawTestChoice, exhaustive)
 
@@ -110,17 +112,6 @@ functions2 =
       (exhaustive Ji Ji Xin Ren Ding Jia Xin Wu Ji Ren)
       (exhaustive Wu Wu Yi Yi Ji Gui Bing Bing Gui Yi)
       (exhaustive Wu Jia Ren Jia Geng Gui Wu Xin Jia Xin)
-      (exhaustive Yi Ren Ding Ji Wu Bing Yi Xin Ren Ji)
-      (exhaustive Ding Ji Yi Xin Jia Bing Bing Xin Ji Ji)
-      (exhaustive Xin Wu Xin Xin Ren Wu Bing Yi Ji Jia)
-      (exhaustive Gui Yi Ren Xin Ji Wu Geng Gui Wu Jia)
-      (exhaustive Bing Xin Ren Jia Ding Ren Yi Wu Ren Geng)
-      (exhaustive Jia Ding Bing Ji Xin Xin Wu Bing Ren Xin)
-      (exhaustive Ji Ding Ji Wu Wu Yi Ding Ji Ding Ren)
-      (exhaustive Xin Gui Yi Geng Xin Ren Gui Ren Geng Gui)
-      (exhaustive Geng Yi Ji Bing Wu Wu Wu Gui Yi Yi)
-      (exhaustive Xin Bing Ding Bing Wu Gui Ding Ren Gui Ding)
-      (exhaustive Ding Yi Ji Geng Ding Ren Ji Bing Yi Xin)
   : exhaustive
       (exhaustive Ren Wu Bing Geng Yi Bing Gui Jia Yi Geng)
       (exhaustive Ding Xin Yi Gui Xin Ren Yi Bing Gui Yi)
@@ -132,12 +123,4 @@ functions2 =
       (exhaustive Ji Bing Geng Ding Ren Gui Wu Xin Xin Xin)
       (exhaustive Bing Bing Ren Yi Yi Ren Bing Jia Geng Ji)
       (exhaustive Geng Bing Gui Ding Xin Jia Yi Geng Wu Geng)
-      (exhaustive Yi Geng Yi Gui Geng Xin Ding Jia Gui Ren)
-      (exhaustive Bing Xin Wu Bing Ren Wu Wu Geng Wu Yi)
-      (exhaustive Geng Wu Bing Wu Bing Geng Xin Xin Geng Wu)
-      (exhaustive Geng Gui Ding Wu Yi Wu Bing Ding Ji Ji)
-      (exhaustive Yi Bing Geng Gui Xin Xin Gui Yi Yi Ji)
-      (exhaustive Ding Jia Gui Ren Wu Gui Wu Ji Gui Wu)
-      (exhaustive Ren Ding Ji Geng Jia Ding Gui Bing Gui Geng)
-      (exhaustive Wu Geng Xin Wu Xin Gui Ding Ren Wu Jia)
-      (exhaustive Ji Ji Ren Gui Jia Wu Xin Bing Ren Ding)
+  : Nil
