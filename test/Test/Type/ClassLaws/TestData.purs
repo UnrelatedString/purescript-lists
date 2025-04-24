@@ -1,6 +1,7 @@
 module Test.Type.ClassLaws.TestData
   ( arrays
   , functions1
+  , functions2
   ) where
 
 import Prelude
@@ -98,7 +99,7 @@ functions2 =
     const
   : const identity
   : const (const Xin)
-  : \a b -> if a == b then Bing else Gui
+  : (\a b -> if a == b then Bing else Gui)
   -- rand
   -- but only two because like wow . that's 100
   : exhaustive
