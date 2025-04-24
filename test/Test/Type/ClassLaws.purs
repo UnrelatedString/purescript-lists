@@ -105,14 +105,18 @@ testLaws className lawTests typeName fromArray = do
 
 functorLaws :: forall f.
   Eq (f HeavenlyStem) =>
+  Show (f HeavenlyStem) =>
   Functor f =>
   LawTest f
 functorLaws = testLaws "Functor"
-  [
+  [ Law "Identity: map identity = identity" do
+      x <- make [Yi, Yi]
+      assert x $ map identity x == x
   ]
 
 applyLaws :: forall f.
   Eq (f HeavenlyStem) =>
+  Show (f HeavenlyStem) =>
   Apply f =>
   LawTest f
 applyLaws = testLaws "Apply"
@@ -121,6 +125,7 @@ applyLaws = testLaws "Apply"
 
 applicativeLaws :: forall f.
   Eq (f HeavenlyStem) =>
+  Show (f HeavenlyStem) =>
   Applicative f =>
   LawTest f
 applicativeLaws = testLaws "Applicative"
@@ -129,6 +134,7 @@ applicativeLaws = testLaws "Applicative"
 
 bindLaws :: forall f.
   Eq (f HeavenlyStem) =>
+  Show (f HeavenlyStem) =>
   Bind f =>
   LawTest f
 bindLaws = testLaws "Bind"
@@ -137,6 +143,7 @@ bindLaws = testLaws "Bind"
 
 monadLaws :: forall f.
   Eq (f HeavenlyStem) =>
+  Show (f HeavenlyStem) =>
   Monad f =>
   LawTest f
 monadLaws = testLaws "Monad"

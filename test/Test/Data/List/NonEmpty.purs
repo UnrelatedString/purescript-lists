@@ -18,6 +18,10 @@ import Effect (Effect)
 import Effect.Console (log)
 import Test.Assert (assert)
 
+import Test.Type.ClassLaws
+  ( functorLaws
+  )
+
 testNonEmptyList :: Effect Unit
 testNonEmptyList = do
   let
@@ -283,6 +287,8 @@ testNonEmptyList = do
 
   log "toUnfoldable should agree with Unfoldable1 NEL"
   assert $ nel 1 [2, 3, 4, 5] == NEL.toUnfoldable (nel 1 [2, 3, 4, 5])
+
+  functorLaws "NonEmptyList (strict)" NEL.fromFoldable
 
 step1 :: Int -> Tuple Int (Maybe Int)
 step1 n = Tuple n (if n >= 5 then Nothing else Just (n + 1))
