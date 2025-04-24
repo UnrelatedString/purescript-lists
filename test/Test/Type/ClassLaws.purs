@@ -56,7 +56,7 @@ type LawTestChoice = List
 newtype LawTestM f a = LawTestM (FromArray f -> LawTestChoice a)
 
 instance Functor (LawTestM f) where
-  map f (LawTestM g) = LawTestM $ map $ map f g
+  map f (LawTestM g) = LawTestM $ map (map f) g
 
 instance Apply (LawTestM f) where
   apply (LawTestM f) (LawTestM g) = LawTestM \toArray -> f toArray <*> g toArray
@@ -80,15 +80,16 @@ data Law f = Law String (LawTestM f Assertion)
 runLaw :: forall f a. Law f -> FromArray f -> Effect Unit
 runLaw (Law lawDescription (LawTestM reader)) fromArray = do
   Console.log lawDescription
-  traverse_ (traverse_ runAssertion) $ reader fromArray
+  traverse_ runAssertion $ reader fromArray
 
 make :: forall f a. Array a -> LawTestM f (f a)
-make = LawTestM <<< pure <<< (#)
+make = LawTestM <<< (pure <<< _) <<< (#)
 
 testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
 testLaws className lawTests typeName fromArray = do
-  Console.log $ typeName <> " should satisfy " <> className <> " laws:"
-  Console.grouped $ traverse_ (runLaw fromArray) lawTests
+  let groupName = typeName <> " should satisfy " <> className <> " laws:"
+  -- hope this actually prints that lol I do not understand groups
+  Console.grouped groupName $ traverse_ (_ `runLaw` fromArray) lawTests
 
 functorLaws :: forall f.
   Eq (f HeavenlyStem) =>
