@@ -66,7 +66,7 @@ instance Applicative (LawTestM f) where
   pure = LawTestM <<< pure <<< pure
 
 instance Bind (LawTestM f) where
-  bind (LawTestM g) f = LawTestM \fromArray -> let LawTestM h = f (g fromArray) in h fromArray
+  bind (LawTestM g) f = LawTestM \fromArray -> let LawTestM h = f <$> g fromArray in h fromArray
 
 instance Monad (LawTestM f)
 
