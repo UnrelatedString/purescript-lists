@@ -60,10 +60,15 @@ instance Functor (LawTestM f) where
   map f (LawTestM g) = LawTestM $ map (map f) g
 
 instance Apply (LawTestM f) where
-  apply (LawTestM f) (LawTestM g) = LawTestM \toArray -> f toArray <*> g toArray
+  apply (LawTestM f) (LawTestM g) = LawTestM \fromArray -> f fromArray <*> g fromArray
 
 instance Applicative (LawTestM f) where
   pure = LawTestM <<< pure <<< pure
+
+instance Bind (LawTestM f) where
+  bind (LawTestM g) f = LawTestM \fromArray -> let LawTestM h = f (g fromArray) in h fromArray
+
+instance Monad (LawTestM f)
 
 type Assertion = Maybe String
 
@@ -84,7 +89,7 @@ runLaw (Law lawDescription (LawTestM reader)) fromArray = do
   traverse_ runAssertion $ reader fromArray
 
 make :: forall f a. Array a -> LawTestM f (f a)
-make a = LawTestM \toArray -> fromMaybe (toArray a)
+make a = LawTestM \fromArray -> fromMaybe (fromArray a)
 
 testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
 testLaws className lawTests typeName fromArray = do
