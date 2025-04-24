@@ -17,8 +17,8 @@ import Effect.Console as Console
 import Test.Assert as Assert
 
 import Data.List (List)
-
-import Test.Type.ClassLaws.TestData (HeavenlyStem, arrays, functions1, functions2)
+import Data.Tuple.Nested ((/\))
+import Test.Type.ClassLaws.TestData (HeavenlyStem, arrays, functions1, functions2, showFun)
 
 type FromArray f = forall a. Array a -> Maybe (f a)
 
@@ -66,8 +66,6 @@ runAssertion :: Assertion -> Effect Unit
 runAssertion (Just msg) = Assert.assert' msg false
 runAssertion Nothing = pure unit
 
-
-
 data Law f = Law String (LawTestM f Assertion)
 
 runLaw :: forall f. Law f -> FromArray f -> Effect Unit
@@ -83,6 +81,9 @@ choose = LawTestM <<< const
 
 fA :: forall f. LawTestM f (f HeavenlyStem)
 fA = choose arrays >>= make
+
+aToA :: forall f. LawTestM f (HeavenlyStem -> HeavenlyStem)
+aToA = choose functions1
 
 testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
 testLaws className lawTests typeName fromArray = do
@@ -100,7 +101,11 @@ functorLaws = testLaws "Functor"
       x <- fA
       assert x $ map identity x == x
   , Law "Composition: map (f <<< g) = map f <<< map g" do
-      assert unit true
+      x <- fA
+      f <- aToA
+      g <- aToA
+      assert (x /\ showFun f /\ showFun g) $
+        map (f <<< g) x == (map f <<< map g) x
   ]
 
 applyLaws :: forall f.

@@ -3,11 +3,13 @@ module Test.Type.ClassLaws.TestData
   , functions1
   , functions2
   , HeavenlyStem
+  , showFun
   ) where
 
 import Prelude
 
 import Data.List ((:), List(Nil))
+import Data.Foldable (fold)
 
 type LawTestChoice = List
 
@@ -33,6 +35,9 @@ exhaustive _ _ _ _ _ _ _ _ _ x Gui = x
 
 instance Show HeavenlyStem where
   show = exhaustive "甲" "乙" "丙" "丁" "戊" "己" "庚" "辛" "壬" "癸"
+
+showFun :: (HeavenlyStem -> HeavenlyStem) -> String
+showFun f = "exhaustive " <> fold (show <$> f <$> [Jia, Yi, Bing, Ding, Wu, Ji, Geng, Xin, Ren, Gui])
 
 -- Psseudorandomly generated then hardcoded because the alternative is reimplementing an LCG
 
