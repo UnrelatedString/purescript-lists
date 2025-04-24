@@ -10,7 +10,7 @@ module Test.Type.ClassLaws
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.Traversable (class Traversable, traverse_)
+import Data.Traversable (class Traversable, traverse_, traverse)
 import Data.Unfoldable (fromMaybe)
 import Effect (Effect)
 import Effect.Console as Console
@@ -66,7 +66,13 @@ instance Applicative (LawTestM f) where
   pure = LawTestM <<< pure <<< pure
 
 instance Bind (LawTestM f) where
-  bind (LawTestM g) f = LawTestM \fromArray -> let LawTestM h = f <$> g fromArray in h fromArray
+  bind :: forall a b. LawTestM f a -> (a -> LawTestM f b) -> LawTestM f b
+  bind (LawTestM g) f = LawTestM bound
+    where bound :: FromArray f -> LawTestChoice b
+          bound fromArray = do
+            g' <- g fromArray
+            let LawTestM h = f g'
+            h fromArray
 
 instance Monad (LawTestM f)
 
