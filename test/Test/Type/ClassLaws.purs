@@ -11,6 +11,7 @@ import Prelude
 
 import Data.Maybe (Maybe(..))
 import Data.Traversable (class Traversable, traverse_)
+import Data.Unfoldable (fromMaybe)
 import Effect (Effect)
 import Effect.Console as Console
 import Test.Assert as Assert
@@ -83,7 +84,7 @@ runLaw (Law lawDescription (LawTestM reader)) fromArray = do
   traverse_ runAssertion $ reader fromArray
 
 make :: forall f a. Array a -> LawTestM f (f a)
-make = LawTestM <<< (pure <<< _) <<< (#)
+make a = LawTestM \toArray -> fromMaybe (toArray a)
 
 testLaws :: forall f t. Traversable t => String -> t (Law f) -> LawTest f
 testLaws className lawTests typeName fromArray = do
