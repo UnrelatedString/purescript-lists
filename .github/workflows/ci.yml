@@ -32,4 +32,6 @@ jobs:
       - name: Run tests
         run: |
           bower install
-          npm run-script test --if-present
+          npm run test
+          npm run testsubdir
+

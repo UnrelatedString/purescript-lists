@@ -1,4 +1,4 @@
-module Test.ClassLaws where
+module Test.Main where
 
 import Prelude
 
