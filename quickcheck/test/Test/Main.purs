@@ -34,6 +34,10 @@ main = runSpecAndExitProcess [consoleReporter] do
     functorLaws :: For List
     applyLaws :: For List
     applicativeLaws :: For List
+  describe "NonEmptyList instances" $ void do
+    functorLaws :: For NonEmptyList
+    applyLaws :: For NonEmptyList
+    applicativeLaws :: For NonEmptyList
 
 functorLaws :: forall f. Functor f => For f
 functorLaws = proxied $ describe "Functor laws" do
