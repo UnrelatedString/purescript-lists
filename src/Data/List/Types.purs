@@ -209,7 +209,9 @@ derive newtype instance functorNonEmptyList :: Functor NonEmptyList
 
 instance applyNonEmptyList :: Apply NonEmptyList where
   apply (NonEmptyList (f :| fs)) (NonEmptyList (a :| as)) =
-    NonEmptyList (f a :| ((#) a <$> fs) <> (fs <*> (a : as)))
+    NonEmptyList (f a :| behead ((f : fs) <*> (a : as)))
+    where behead (_:t) = t
+          behead Nil = Nil
 
 instance applicativeNonEmptyList :: Applicative NonEmptyList where
   pure = NonEmptyList <<< NE.singleton
