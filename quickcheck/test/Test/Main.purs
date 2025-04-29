@@ -32,6 +32,8 @@ main :: Effect Unit
 main = runSpecAndExitProcess [consoleReporter] do
   describe "List instances" $ void do
     functorLaws :: For List
+    applyLaws :: For List
+    applicativeLaws :: For List
 
 functorLaws :: forall f. Functor f => For f
 functorLaws = proxied $ describe "Functor laws" do
@@ -40,3 +42,21 @@ functorLaws = proxied $ describe "Functor laws" do
   it "Composition: map (f <<< g) = map f <<< map g" do
     quickCheck \(l :: f Value) (f :: Value -> Value) g -> map (f <<< g) l === map f (map g l)
 
+applyLaws :: forall f. Apply f => For f
+applyLaws = proxied $ describe "Apply law" do
+  it "Associative composition: (<<<) <$> f <*> g <*> h = f <*> (g <*> h)" do
+    quickCheck \(f :: f (Value -> Value)) g (h :: f Value) ->
+      ((<<<) <$> f <*> g <*> h) === (f <*> (g <*> h))
+
+applicativeLaws :: forall f. Applicative f => For f
+applicativeLaws = proxied $ describe "Applicative laws" do
+  it "Identity: (pure identity) <*> v = v" do
+    quickCheck \(v :: f Value) -> (pure identity) <*> v === v
+  it "Composition: pure (<<<) <*> f <*> g <*> h = f <*> (g <*> h)" do
+    quickCheck \(f :: f (Value -> Value)) g (h :: f Value) ->
+      (pure (<<<) <*> f <*> g <*> h) === (f <*> (g <*> h))
+  it "Homomorphism: (pure f) <*> (pure x) = pure (f x)" do
+    quickCheck \f (x :: Value) -> (pure f <*> pure x) === (pure (f x) :: f Value)
+  it "Interchange: u <*> (pure y) = (pure (_ $ y)) <*> u" do
+    quickCheck \(u :: f (Value -> Value)) y ->
+      (u <*> (pure y)) === ((pure (_ $ y)) <*> u)
