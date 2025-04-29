@@ -25,18 +25,18 @@ type For f =
 
 type Value = Int
 
-proxied :: forall m f. m Unit -> m (Proxy f)
+proxied :: forall m f. Functor m => m Unit -> m (Proxy f)
 proxied = (_ $> Proxy)
 
 main :: Effect Unit
 main = runSpecAndExitProcess [consoleReporter] do
-  describe 
-  functorLaws :: For List
+  describe "List instances" $ void do
+    functorLaws :: For List
 
-functorLaws :: forall f. For f
+functorLaws :: forall f. Functor f => For f
 functorLaws = proxied $ describe "Functor laws" do
   it "Identity: map identity = identity" do
     quickCheck \(l :: f Value) -> map identity l === l
   it "Composition: map (f <<< g) = map f <<< map g" do
-    quickCheck \(l :: f Value) -> map (f <<< g) l === map f (map g l)
+    quickCheck \(l :: f Value) (f :: Value -> Value) g -> map (f <<< g) l === map f (map g l)
 
