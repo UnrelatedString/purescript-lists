@@ -36,10 +36,6 @@
     "purescript-arrays": "^7.0.0",
     "purescript-assert": "^6.0.0",
     "purescript-console": "^6.0.0",
-    "purescript-minibench": "^4.0.0",
-    "purescript-quickcheck": "^8.0.1",
-    "purescript-spec": "^8.1.1",
-    "purescript-spec-quickcheck": "^5.0.2",
-    "purescript-spec-node": "purescript-spec/purescript-spec-node#^0.0.3"
+    "purescript-minibench": "^4.0.0"
   }
 }
