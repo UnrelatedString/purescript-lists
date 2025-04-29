@@ -40,6 +40,6 @@
     "purescript-quickcheck": "^8.0.1",
     "purescript-spec": "^8.1.1",
     "purescript-spec-quickcheck": "^5.0.2",
-    "purescript-spec-node": "^0.0.3"
+    "purescript-spec-node": "purescript-spec/purescript-spec-node#^0.0.3"
   }
 }
