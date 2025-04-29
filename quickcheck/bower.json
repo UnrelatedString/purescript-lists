@@ -36,7 +36,6 @@
     "purescript-spec-node": "purescript-spec/purescript-spec-node#^0.0.3"
   },
   "resolutions": {
-    "purescript-lists": "*",
     "purescript-prelude": "^6.0.0",
     "purescript-bifunctors": "^6.0.0",
     "purescript-const": "^6.0.0",
