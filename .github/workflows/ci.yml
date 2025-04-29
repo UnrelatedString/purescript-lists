@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: purescript-contrib/setup-purescript@main
         with:
@@ -30,5 +30,7 @@ jobs:
         run: |
           bower install
           npm run test
-          npm run testsubdir
+      
+      - name: Run additional tests
+        run: npm run testsubdir
 
