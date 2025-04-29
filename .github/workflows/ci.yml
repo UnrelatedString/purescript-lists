@@ -1,10 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+on: [push]
 
 jobs:
   build:
@@ -23,6 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install -g bower
+          npm install -g spago@next
           npm install
           bower install --production
 
