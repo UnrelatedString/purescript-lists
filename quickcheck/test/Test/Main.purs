@@ -34,10 +34,14 @@ main = runSpecAndExitProcess [consoleReporter] do
     functorLaws :: For List
     applyLaws :: For List
     applicativeLaws :: For List
+    bindLaws :: For List
+    monadLaws :: For List
   describe "NonEmptyList instances" $ void do
     functorLaws :: For NonEmptyList
     applyLaws :: For NonEmptyList
     applicativeLaws :: For NonEmptyList
+    bindLaws :: For NonEmptyList
+    monadLaws :: For NonEmptyList
 
 functorLaws :: forall f. Functor f => For f
 functorLaws = proxied $ describe "Functor laws" do
@@ -64,3 +68,18 @@ applicativeLaws = proxied $ describe "Applicative laws" do
   it "Interchange: u <*> (pure y) = (pure (_ $ y)) <*> u" do
     quickCheck \(u :: f (Value -> Value)) y ->
       (u <*> (pure y)) === ((pure (_ $ y)) <*> u)
+
+bindLaws :: forall f. Bind f => For f
+bindLaws = proxied $ describe "Bind laws" do
+  it "Associativity: (x >>= f) >>= g = x >>= (\\k -> f k >>= g)" do
+    quickCheck \(x :: f Value) f (g :: Value -> f Value) ->
+      ((x >>= f) >>= g) === (x >>= (\k -> f k >>= g))
+  it "Apply Superclass: apply f x = f >>= \\f’ -> map f’ x" do
+    quickCheck \(f :: f (Value -> Value)) x -> apply f x === (f >>= \f' -> map f' x)
+
+monadLaws :: forall f. Monad f => For f
+monadLaws = proxied $ describe "Monad laws" do
+  it "Left Identity: pure x >>= f = f x" do
+    quickCheck \(f :: Value -> f Value) x -> (pure x >>= f) === f x
+  it "Right Identity: x >>= pure = x" do
+    quickCheck \(x :: f Value) -> (x >>= pure) === x
