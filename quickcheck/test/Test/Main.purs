@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 
 import Effect (Effect)
-import Test.QuickCheck ((===), class Testable, class Arbitrary, class Coarbitrary)
+import Test.QuickCheck ((===), class Arbitrary, class Coarbitrary)
 import Test.Spec (Spec, describe, it)
 import Test.Spec.QuickCheck (quickCheck)
 import Test.Spec.Runner.Node (runSpecAndExitProcess)
@@ -11,8 +11,8 @@ import Test.Spec.Reporter.Console (consoleReporter)
 import Type.Proxy (Proxy(..))
 
 import Data.List.Types (List, NonEmptyList)
-import Data.List.ZipList (ZipList)
-import Data.List.Lazy.Types as LZ
+-- import Data.List.ZipList (ZipList)
+-- import Data.List.Lazy.Types as LZ
 
 -- Proxy a is Discard ;)
 type For f =
@@ -23,12 +23,7 @@ type For f =
   Coarbitrary (f Value) =>
   Spec (Proxy f)
 
--- type For' f = For (OrphanArbitrary1 f)
-
 type Value = Int
-
--- newtype OrphanArbitrary1 f a = OrphanArbitrary1 (f a)
--- derive newtype instance Eq (f a) => Eq (OrphanArbitrary1 f a)
 
 proxied :: forall m f. Functor m => m Unit -> m (Proxy f)
 proxied = (_ $> Proxy)
@@ -47,18 +42,6 @@ main = runSpecAndExitProcess [consoleReporter] do
     applicativeLaws :: For NonEmptyList
     bindLaws :: For NonEmptyList
     monadLaws :: For NonEmptyList
-  -- describe "Lazy.List instances" $ void do
-  --   functorLaws :: For' LZ.List
-  --   applyLaws :: For' LZ.List
-  --   applicativeLaws :: For' LZ.List
-  --   bindLaws :: For' LZ.List
-  --   monadLaws :: For' LZ.List
-  -- describe "Lazy.NonEmptyList instances" $ void do
-  --   functorLaws :: For' LZ.NonEmptyList
-  --   applyLaws :: For' LZ.NonEmptyList
-  --   applicativeLaws :: For' LZ.NonEmptyList
-  --   bindLaws :: For' LZ.NonEmptyList
-  --   monadLaws :: For' LZ.NonEmptyList
 
 functorLaws :: forall f. Functor f => For f
 functorLaws = proxied $ describe "Functor laws" do
